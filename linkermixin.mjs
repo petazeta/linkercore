@@ -216,7 +216,7 @@ const dataMixin=Sup => class extends Sup {
     if (level > 0) level--;
 
     const innerLoad = (myParent, sourceParent) => {
-      copyProps(myParent, sourceParent, thisProps);
+      copyProps(myParent, sourceParent);
       myParent.addChild(this); // new thing
       myParent.loadAsc(sourceParent, level, thisProps);
     }
