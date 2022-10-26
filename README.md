@@ -16,7 +16,7 @@ class Node extends BasicNode {};
 class Linker extends BasicLinker {};
 
 Node.linkerConstructor=Linker;
-Linker.dataConstructor=Node;
+Linker.nodeConstructor=Node;
 
 let myLinker = new Linker('UsersCollection');
 let myUser = myLinker.addChild(new Node({name: 'Peter', age: 25}));
