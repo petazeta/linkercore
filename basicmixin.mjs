@@ -9,7 +9,12 @@ const basicMixin=Sup => class extends Sup {
     this.props = {};
     if (props) Object.assign(this.props, props);
   }
-
+  static copyProps(target, source, thisProps){
+    return copyProps(target, source, thisProps);
+  }
+  copyProps(source, thisProps){
+    return copyProps(this, source, thisProps);
+  }
   // thisProps: If not missed defines which props to load
   load(source, thisProps) {
     return copyProps(this, source, thisProps);
@@ -22,6 +27,7 @@ const basicMixin=Sup => class extends Sup {
   equivalentTo(otherNode) {
     return this.constructor.equivalent(this, otherNode);
   }
+
 }
 
 export default basicMixin;

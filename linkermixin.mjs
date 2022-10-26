@@ -63,7 +63,7 @@ const commonMixin=Sup => class extends Sup {
 
 // type: primary, foreign or position. return unique value
 // returns the first system key name of given type
-export function getSysKey(parentNode, type='foreign'){
+export function getSysKey(parentNode, type='foreignkey'){
   if (type=="primary") {
     const result = parentNode.sysChildTableKeysInfo.find(value=>value.type=="primary");
     if (result) return result.name;
@@ -156,7 +156,7 @@ const linkerMixin=Sup => class extends Sup {
   }
   
   // type: primary, foreignkey, positionkey. return unique value
-  static getSysKey(parentNode, type='foreign'){
+  static getSysKey(parentNode, type='foreignkey'){
     return getSysKey(parentNode, type);
   }
   
@@ -174,6 +174,53 @@ const linkerMixin=Sup => class extends Sup {
   
   getChildKeys(type){
     return this.constructor.getChildKeys(this, type);
+  }
+
+  getChild(obj) {
+    return super.getDescendent(obj);
+  }
+
+  addChild(obj) {
+    return super.addDescendent(obj);
+  }
+
+  removeChild(obj){
+    return super.removeDescendent(obj);
+  }
+
+  removeChildren(){
+    return super.removeDescendents();
+  }
+
+  getPartner(objSearch) {
+    if (Array.isArray(this.partner)) {
+      if (!objSearch) return this.partner[0];
+      return this.partner.find(partner=>
+        Object.entries(objSearch).every(([objKey, objValue])=>
+          Object.entries(partner.props).find(([partnerKey, partnerValue])=>objKey==partnerKey && objValue==partnerValue)));
+    }
+    return super.getAscendent(objSearch);
+  }
+
+  addPartner(obj) {
+    if (!this.partner) this.partner=obj;
+    else {
+      if (!Array.isArray(this.partner)) this.partner=[this.partner];
+      this.partner.push(obj);
+    }
+  }
+
+  setPartner(obj) {
+    return super.setAscendent(obj);
+  }
+
+  removePartner(obj){
+    if (Array.isArray(this.partner)) this.partner = this.partner.filter(partner => partner != obj);
+    return super.removeAscendent(obj);
+  }
+
+  removePartners(){
+    return super.removeAscendent();
   }
 }
 
@@ -235,12 +282,32 @@ const dataMixin=Sup => class extends Sup {
     innerLoad(this.parent, source.parent);
   }
 
-  addRelationship(obj) {
-    return super.addChild(obj);
+  getRelationship(obj) {
+    return super.getDescendent(obj);
   }
 
-  getRelationship(obj) {
-    return super.getChild(obj);
+  addRelationship(obj) {
+    return super.addDescendent(obj);
+  }
+
+  removeRelationship(obj){
+    return super.removeDescendent(obj);
+  }
+
+  removeRelationships(){
+    return super.removeDescendents();
+  }
+
+  getParent(obj) {
+    return super.getAscendent(obj);
+  }
+
+  setParent(obj) {
+    return super.setAscendent(obj);
+  }
+
+  removeParent(obj){
+    return super.removeAscendent(obj);
   }
 }
 
@@ -249,9 +316,9 @@ const dataMixin=Sup => class extends Sup {
 const dataExpressMixin=Sup => class extends Sup {
   getRelationship(obj) {
     if (typeof obj=="string") {
-      return super.getChild({"name": obj});
+      return super.getDescendent({"name": obj});
     }
-    return super.getChild(obj);
+    return super.getDescendent(obj);
   }
   getNextChild(obj) {
     return this.relationships[0].getChild(obj);
@@ -262,9 +329,9 @@ const linkerExpressMixin=Sup => class extends Sup {
   getChild(obj) {
     if (typeof obj=="string") { // selecting first prop!=id
       const firstKey = this.childTableKeys.find(myKey=>myKey!='id');
-      return super.getChild({[firstKey]: obj});
+      return super.getDescendent({[firstKey]: obj});
     }
-    return super.getChild(obj);
+    return super.getDescendent(obj);
   }
 }
 

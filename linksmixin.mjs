@@ -69,22 +69,45 @@ const linksMixin=Sup => class extends Sup {
     return getRoot(this);
   }
 
-  removeChild(obj) {
-    this._children = this._children.filter(child => child != obj);
+  // Finds the child which value is as in obj key value pair. If no argument it returs first child
+  getDescendent(objSearch) {
+    if (!objSearch) return this._children[0];
+    return this._children.find(child=>
+      Object.entries(objSearch).every(([objKey, objValue])=>
+        Object.entries(child.props).find(([childKey, childValue])=>objKey==childKey && objValue==childValue)));
   }
 
-  addChild(obj) { // It replaces previous parent if present
+  addDescendent(obj) { // It replaces previous parent if present
     this._children.push(obj);
     obj._parent=this;
     return obj;
   }
 
+  removeDescendent(obj) {
+    if (obj) this._children = this._children.filter(child => child != obj);
+  }
+
+  removeDescendents(){
+    this._children=null;
+  }
+
   // Finds the child which value is as in obj key value pair. If no argument it returs first child
-  getChild(objSearch) {
-    if (!objSearch) return this._children[0];
-    return this._children.find(child=>
-      Object.entries(objSearch).every(([objKey, objValue])=>
-        Object.entries(child.props).find(([childKey, childValue])=>objKey==childKey && objValue==childValue)));
+  getAscendent(objSearch) {
+    if (!this._parent) return;
+    if (!objSearch) return this._parent;
+    return Object.entries(objSearch).every(([objKey, objValue])=>
+      Object.entries(this._parent.props).find(([parentKey, parentValue])=>objKey==parentKey && objValue==parentValue));
+  }
+
+  setAscendent(obj) { // It replaces previous parent if present
+    this._parent=obj;
+    obj.addChild(this);
+    return obj;
+  }
+
+  removeAscendent(obj) {
+    if (!obj) this._parent=null;
+    if (this._parent===obj) this._parent=null;
   }
 
   arrayFromTree() {
