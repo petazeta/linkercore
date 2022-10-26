@@ -12,14 +12,14 @@ Core files of the linker framework.
 
 import {BasicNode, BasicLinker} from './linker.mjs';
 
-class NodeClass extends BasicNode {};
-class LinkerClass extends BasicLinker {};
+class Node extends BasicNode {};
+class Linker extends BasicLinker {};
 
-NodeClass.linkerConstructor=LinkerClass;
-LinkerClass.dataConstructor=NodeClass;
+Node.linkerConstructor=Linker;
+Linker.dataConstructor=Node;
 
-let myLinker = new LinkerClass('UsersCollection');
-let myUser = myLinker.addChild(new NodeClass({name: 'Peter', age: 25}));
+let myLinker = new Linker('UsersCollection');
+let myUser = myLinker.addChild(new Node({name: 'Peter', age: 25}));
 let userClone= myUser.clone();
 
 ```
